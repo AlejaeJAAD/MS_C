@@ -2,7 +2,7 @@ import Customer from '../models/Customer.js';
 import Employee from '../models/Employee.js'
 import Register from '../models/Register.js'
 import Invoice from '../models/Invoice.js'
-import InvoiceItems from '../models/InvoiceItems.js'
+import InvoiceItems from '../models/InvoiceLine.js'
 import Track from '../models/Track.js'
 import Genre from '../models/Genre.js'
 import { register } from '../services/authService.js';

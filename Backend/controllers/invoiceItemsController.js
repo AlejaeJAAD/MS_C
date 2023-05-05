@@ -1,4 +1,4 @@
-import InvoiceItems from '../models/InvoiceItems.js'
+import InvoiceItems from '../models/InvoiceLine.js'
 import Invoice from '../models/Invoice.js'
 import Track from '../models/Track.js'
 

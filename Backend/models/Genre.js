@@ -2,15 +2,18 @@ import Sequelize from 'sequelize';
 import { sequelize } from '../configure-db.js'
 
 const Genre = sequelize.define('genre', {
-    name:{
-        type: Sequelize.STRING
+    genreid: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-},
-{
+    name: {
+        type: Sequelize.STRING
+    }
+}, {
     timestamps: false,
-    primaryKey: true,
-    autoIncrement: true,
-})
+    tableName: 'genre' // set the table name explicitly to 'genre'
+});
 
 sequelize.sync({ force: false }).then(() => {
     console.log('Genre table created successfully!');
@@ -18,4 +21,10 @@ sequelize.sync({ force: false }).then(() => {
     console.error('Unable to create table : ', error);
 });
 
-export default Genre
+sequelize.query('DROP TABLE IF EXISTS `genres`').then(() => {
+    console.log('Genres table dropped successfully!');
+}).catch((error) => {
+    console.error('Unable to drop Genres table : ', error);
+});
+
+export default Genre;

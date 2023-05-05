@@ -1,31 +1,32 @@
 import Sequelize from 'sequelize';
 import { sequelize } from '../configure-db.js'
 
-const Album = sequelize.define('album', {
-    albumid: {
+const Playlist = sequelize.define('playlist', {
+    playlistid: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    title: {
+    name:{
         type: Sequelize.STRING
-    },
+    }
 },
 {
     timestamps: false,
-    tableName: 'album'
+    tableName: 'playlist'
 })
 
 sequelize.sync({ force: false }).then(() => {
-    console.log('Album table created successfully!');
+    console.log('Playlist table created successfully!');
 }).catch((error) => {
     console.error('Unable to create table : ', error);
 });
 
-sequelize.query('DROP TABLE IF EXISTS `albums`').then(() => {
-    console.log('Albums table dropped successfully!');
+sequelize.query('DROP TABLE IF EXISTS `playlists`').then(() => {
+    console.log('Playlists table dropped successfully!');
 }).catch((error) => {
-    console.error('Unable to drop Albums table : ', error);
+    console.error('Unable to drop Playlists table : ', error);
 });
 
-export default Album
+
+export default Playlist

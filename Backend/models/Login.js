@@ -1,29 +1,34 @@
 import Sequelize from 'sequelize';
 import { sequelize } from '../configure-db.js'
 
-const loginSchema = sequelize.define('loginSchema', {
+const Login = sequelize.define('login', {
+    uid: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     loginDate: {
         type: Sequelize.DATE
     },
     loginIP: {
         type: Sequelize.DATE
     },
-    uid: {
-        type: Sequelize.INTEGER
-    },
 },
 {
     timestamps: true,
+    tableName: 'login'
 })
 
-// Employee.belongsTo(loginSchema, {
-//     foreignKey: 'uid',
-// });
-
 sequelize.sync({ force: false }).then(() => {
-    console.log('loginSchema table created successfully!');
+    console.log('login table created successfully!');
 }).catch((error) => {
     console.error('Unable to create table : ', error);
 });
 
-export default loginSchema
+sequelize.query('DROP TABLE IF EXISTS `loginschemas`').then(() => {
+    console.log('Loginschema table dropped successfully!');
+}).catch((error) => {
+    console.error('Unable to drop Logins table : ', error);
+});
+
+export default Login

@@ -1,24 +1,33 @@
 import Sequelize from 'sequelize';
 import { sequelize } from '../configure-db.js'
 
-const registerSchema = sequelize.define('registerSchema', {
+const Register = sequelize.define('register', {
+    uid: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     email: {
         type: Sequelize.STRING
     },
     password: {
         type: Sequelize.STRING
     },
-    uid: {
-        type: Sequelize.INTEGER
-    },
 }, {
-    timestamps: true
+    timestamps: true,
+    tableName: 'register'
 });
 
 sequelize.sync({ force: false }).then(() => {
-    console.log('registerSchema table created successfully!');
+    console.log('register table created successfully!');
 }).catch((error) => {
     console.error('Unable to create table : ', error);
 });
 
-export default registerSchema
+sequelize.query('DROP TABLE IF EXISTS `registerschemas`').then(() => {
+    console.log('Registerschema table dropped successfully!');
+}).catch((error) => {
+    console.error('Unable to drop Registers table : ', error);
+});
+
+export default Register

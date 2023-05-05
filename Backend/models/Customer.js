@@ -2,22 +2,21 @@ import Sequelize from 'sequelize';
 import { sequelize } from '../configure-db.js'
 
 const Customer = sequelize.define('customer', {
-    lastName: {
-        type: Sequelize.STRING
+    customerid: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     firstName: {
         type: Sequelize.STRING
     },
-    company: {
+    lastName: {
         type: Sequelize.STRING
     },
     address: {
         type: Sequelize.STRING
     },
     city:{
-        type: Sequelize.STRING
-    },
-    state:{
         type: Sequelize.STRING
     },
     country:{
@@ -29,17 +28,22 @@ const Customer = sequelize.define('customer', {
     phone:{
         type: Sequelize.STRING
     },
-    fax:{
+    email:{
         type: Sequelize.STRING
     },
-    email:{
+    company: {
+        type: Sequelize.STRING
+    },
+    state:{
+        type: Sequelize.STRING
+    },
+    fax:{
         type: Sequelize.STRING
     }
 },
 {
     timestamps: false,
-    primaryKey: true,
-    autoIncrement: true,
+    tableName: 'customer'
 })
 
 sequelize.sync({ force: false }).then(() => {
@@ -47,5 +51,12 @@ sequelize.sync({ force: false }).then(() => {
 }).catch((error) => {
     console.error('Unable to create table : ', error);
 });
+
+sequelize.query('DROP TABLE IF EXISTS `customers`').then(() => {
+    console.log('Customers table dropped successfully!');
+}).catch((error) => {
+    console.error('Unable to drop Customers table : ', error);
+});
+
 
 export default Customer

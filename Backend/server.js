@@ -19,15 +19,19 @@ import invoiceItemsRoutes from './routes/invoiceItemsRoutes.js'
 import mediaTypesRoutes from './routes/mediaTypesRoutes.js'
 import dashboardRoutes from './routes/dashboardRoutes.js'
 
+import Login from './models/Login.js'
+
 import Album from './models/Album.js'
 import Artist from './models/Artist.js'
 import Employee from './models/Employee.js'
 import Customer from './models/Customer.js'
 import Invoice from './models/Invoice.js'
-import InvoiceItems from './models/InvoiceItems.js'
+import InvoiceLine from './models/InvoiceLine.js'
 import Track from './models/Track.js'
 import Genre from './models/Genre.js'
 import MediaTypes from './models/MediaTypes.js'
+import Playlist from './models/Playlist.js'
+import PlaylistTrack from './models/PlaylistTrack.js'
 
 dotenv.config()
 
@@ -70,30 +74,47 @@ app.use(express.urlencoded({
 app.use(cookieParser())
 
 // Routes
-app.use("/auth", authRoutes)
 app.use("/artists", artistsRoutes)
+app.use("/genres", genreRoutes)
+app.use("/media-types", mediaTypesRoutes)
 app.use("/albums", albumsRoutes)
 app.use("/employees", employeesRoutes)
 app.use("/customers", customersRoutes)
-app.use("/genres", genreRoutes)
 app.use("/tracks", tracksRoutes)
 app.use("/invoices", invoicesRoutes)
 app.use("/invoice-items", invoiceItemsRoutes)
-app.use("/media-types", mediaTypesRoutes)
 app.use("/dashboard", dashboardRoutes)
+app.use("/auth", authRoutes)
 
 //Associations
-Artist.hasMany(Album,{ foreignKey:'artist_id' })
-Album.hasMany(Track,{ foreignKey:'album_id' })
-Employee.hasMany(Customer, { foreignKey: 'support_rep_id' })
-Employee.hasMany(Employee,{foreignKey:'reports_to' })
-Customer.hasMany(Invoice, { foreignKey: 'customer_id' });
-Invoice.belongsTo(Customer, { foreignKey: 'customer_id' });
-InvoiceItems.belongsTo(Invoice,{ foreignKey: 'invoice_id' })
-InvoiceItems.belongsTo(Track, { foreignKey: 'track_id' })
-Track.belongsTo(Genre, { foreignKey: 'genre_id' });
-Genre.hasMany(Track, { foreignKey: 'genre_id' })
-MediaTypes.hasMany(Track,{ foreignKey: 'media_type_id' })
+Login.belongsTo(Customer, { foreignKey: 'customerId' });
+Customer.hasMany(Login, { foreignKey: 'customerId' });
+
+Login.belongsTo(Employee, { foreignKey: 'employeeId' });
+Employee.hasMany(Login, { foreignKey: 'employeeId' });
+
+Artist.hasMany(Album, { foreignKey: 'artistid' });
+Album.belongsTo(Artist, { foreignKey: 'artistid' });
+Album.hasMany(Track, { foreignKey: 'albumid' });
+Track.belongsTo(Album, { foreignKey: 'albumid' });
+Track.belongsTo(MediaTypes, { foreignKey: 'mediatypeid' });
+MediaTypes.hasMany(Track, { foreignKey: 'mediatypeid' });
+Track.belongsTo(Genre, { foreignKey: 'genreid' });
+Genre.hasMany(Track, { foreignKey: 'genreid' });
+Invoice.belongsTo(Customer, { foreignKey: 'customerid' });
+Customer.hasMany(Invoice, { foreignKey: 'customerid' });
+Invoice.hasMany(InvoiceLine, { foreignKey: 'invoiceid' });
+InvoiceLine.belongsTo(Invoice, { foreignKey: 'invoiceid' });
+Track.hasMany(InvoiceLine, { foreignKey: 'trackid' });
+InvoiceLine.belongsTo(Track, { foreignKey: 'trackid' });
+Employee.hasMany(Customer, { foreignKey: 'supportRepId' });
+Customer.belongsTo(Employee, { foreignKey: 'supportRepId' });
+Employee.belongsTo(Employee, { as: 'Manager', foreignKey: 'reportsTo' });
+Employee.hasMany(Employee, { foreignKey: 'reportsTo' });
+Playlist.belongsToMany(Track, { through: PlaylistTrack, foreignKey: 'playlistid', otherKey: 'trackid' });
+Track.belongsToMany(Playlist, { through: PlaylistTrack, foreignKey: 'trackid', otherKey: 'playlistid' });
+PlaylistTrack.belongsTo(Playlist, { foreignKey: 'playlistid' });
+PlaylistTrack.belongsTo(Track, { foreignKey: 'trackid' });
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

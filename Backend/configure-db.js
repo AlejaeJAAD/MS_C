@@ -4,13 +4,13 @@ import Sequelize from 'sequelize';
 dotenv.config()
 
 export const sequelize = new Sequelize(
-  process.env.DATABASE,
-  process.env.USER,
-  process.env.PASSWORD,
-   {
-     host: 'localhost',
-     dialect: 'mysql'
-   }
+     process.env.DATABASE,
+     process.env.USER,
+     process.env.PASSWORD,
+     {
+          host: 'localhost',
+          dialect: 'mysql'
+     }
 );
 
 sequelize.authenticate().then(() => {
