@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.get("/", getGenres)
 router.post("/", createGenre)
+router.get("/", getGenres)
 
 export default router

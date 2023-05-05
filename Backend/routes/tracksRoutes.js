@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.get("/", getTracks)
 router.post("/", createTrack)
+router.get("/", getTracks) 
 
 export default router

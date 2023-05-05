@@ -10,7 +10,7 @@ import {
 const router = Router()
 
 router.post("/", createCustomer)
-router.get("/get", getCustomers)
+router.get("/", getCustomers)
 router.get("/", getCustomersServedByEmployee)
 router.get("/:customer_id/genres", getCustomersMusicGenre)
 router.get("/:customer_id/tracks", getAllTracksPurchasedByCustomer)

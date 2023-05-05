@@ -1,5 +1,6 @@
 import Login from '../models/Login.js'
 import Customer from '../models/Customer.js'
+import Employee from '../models/Employee.js'
 import Register from '../models/Register.js'
 import generateToken from '../utils/generateToken.js'
 import generateRefreshToken from '../utils/generateRefreshToken.js'
@@ -17,6 +18,103 @@ const schemaLogin = Joi.object({
     email: Joi.string().min(3).max(1024).required(),
     password: Joi.string().min(6).max(1024).required()
 })
+
+export const register = async (req, res) => {
+    const { email, password } = req.body.form
+    const { option } = req.body
+
+    try {
+        // Chek if email already exists
+        const emailAlreadyExists = await Register.findOne({
+            where: { email: email }
+        });
+        if (emailAlreadyExists) {
+            return res.status(500).json({
+                mesage: 'Email already registered'
+            });
+        }
+
+        const newUser = await Register.create({ email, password })
+
+        // Register a customer or employee based on the option.
+        let registeredUser;
+        if (option === 'customer') {
+        const {
+                firstName,
+                lastName,
+                address,
+                city,
+                country,
+                postalCode,
+                phone,
+                email,
+                company,
+                state,
+                fax
+            } = req.body
+            registeredUser = await Customer.create({
+                firstName,
+                lastName,
+                address,
+                city,
+                country,
+                postalCode,
+                phone,
+                email,
+                company,
+                state,
+                fax
+            });
+        } else if (option === 'employee') {
+        const {
+                firstName,
+                lastName,
+                address,
+                city,
+                country,
+                postalCode,
+                phone,
+                email,
+                company,
+                state,
+                fax,
+                title,
+                reportsTo,
+                birthDate,
+                hireDate
+            } = req.body
+            registeredUser = await Employee.create({
+                firstName,
+                lastName,
+                address,
+                city,
+                country,
+                postalCode,
+                phone,
+                email,
+                company,
+                state,
+                fax,
+                title,
+                reportsTo,
+                birthDate,
+                hireDate
+            });
+        } else {
+            return res.status(400).json({
+                message: 'Invalid option'
+            })
+        }
+
+        return res.status(201).json({
+            message: `New ${option} registered successfully`,
+            data: registeredUser
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Something went wrong' });
+    }
+}
 
 export const login = async (req, res) => {
     try {

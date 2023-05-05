@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.get("/", getMediaTypes)
 router.post("/", createMediaTypes)
+router.get("/", getMediaTypes)
 
 export default router

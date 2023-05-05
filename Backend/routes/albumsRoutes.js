@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.get("/", getAlbums)
 router.post("/", createAlbum)
+router.get("/", getAlbums)
 
 export default router

@@ -14,6 +14,8 @@ import employeesRoutes from './routes/employeesRoutes.js'
 import customersRoutes from './routes/customersRoutes.js'
 import genreRoutes from './routes/genreRoutes.js'
 import tracksRoutes from './routes/tracksRoutes.js'
+import playlistRoutes from './routes/playlistRoutes.js'
+import playlistTrackRoutes from './routes/playlistTrackRoutes.js'
 import invoicesRoutes from './routes/invoicesRoutes.js'
 import invoiceItemsRoutes from './routes/invoiceItemsRoutes.js'
 import mediaTypesRoutes from './routes/mediaTypesRoutes.js'
@@ -81,6 +83,8 @@ app.use("/albums", albumsRoutes)
 app.use("/employees", employeesRoutes)
 app.use("/customers", customersRoutes)
 app.use("/tracks", tracksRoutes)
+app.use("/playlists", playlistRoutes)
+app.use("/playlisttracks", playlistTrackRoutes)
 app.use("/invoices", invoicesRoutes)
 app.use("/invoice-items", invoiceItemsRoutes)
 app.use("/dashboard", dashboardRoutes)

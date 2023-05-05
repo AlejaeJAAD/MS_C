@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.get("/", getInvoices)
 router.post("/", createInvoice)
+router.get("/", getInvoices)
 
 export default router

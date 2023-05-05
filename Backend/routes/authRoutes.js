@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { 
+    register,
     login,
     forgotPassword,
     confirmForgotPassword,
@@ -10,6 +11,7 @@ import requireRefreshToken from '../middlewares/requireRefreshToken.js'
 
 const router = Router()
 
+router.post("/register", register)
 router.post("/login", login)
 router.post("/forgot-password", forgotPassword)
 router.post("/confirm-forgot-password", confirmForgotPassword)

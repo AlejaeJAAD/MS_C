@@ -6,7 +6,7 @@ import {
 
 const router = Router()
 
-router.get("/", getArtists)
 router.post("/", createArtist)
+router.get("/", getArtists)
 
 export default router

@@ -7,11 +7,35 @@ const Employee = sequelize.define('employee', {
         autoIncrement: true,
         primaryKey: true
     },
+    firstName: {
+        type: Sequelize.STRING
+    },
     lastName: {
         type: Sequelize.STRING
     },
-    firstName: {
-        type: Sequelize.STRING
+    address: {
+        type: Sequelize.STRING,
+    },
+    city: {
+        type: Sequelize.STRING,
+    },
+    country: {
+        type: Sequelize.STRING,
+    },
+    postalCode: {
+        type: Sequelize.STRING,
+    },
+    phone: {
+        type: Sequelize.STRING,
+    },
+    email: {
+        type: Sequelize.STRING,
+    },
+    state: {
+        type: Sequelize.STRING,
+    },
+    fax: {
+        type: Sequelize.STRING,
     },
     title: {
         type: Sequelize.STRING
@@ -25,30 +49,6 @@ const Employee = sequelize.define('employee', {
     },
     hireDate: {
         type: Sequelize.DATE
-    },
-    address: {
-        type: Sequelize.STRING,
-    },
-    city: {
-        type: Sequelize.STRING,
-    },
-    state: {
-        type: Sequelize.STRING,
-    },
-    country: {
-        type: Sequelize.STRING,
-    },
-    postalCode: {
-        type: Sequelize.STRING,
-    },
-    phone: {
-        type: Sequelize.STRING,
-    },
-    fax: {
-        type: Sequelize.STRING,
-    },
-    email: {
-        type: Sequelize.STRING,
     }
 },
 {

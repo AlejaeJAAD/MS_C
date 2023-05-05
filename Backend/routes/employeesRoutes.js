@@ -8,8 +8,8 @@ import {
 
 const router = Router()
 
-router.get("/", getEmployees)
 router.post("/", createEmployee)
+router.get("/", getEmployees)
 router.put("/:id", updateEmployee)
 router.get("/:id", getEmployeeSubordinates)
 
