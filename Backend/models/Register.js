@@ -2,7 +2,7 @@ import Sequelize from 'sequelize';
 import { sequelize } from '../configure-db.js'
 
 const Register = sequelize.define('register', {
-    uid: {
+    id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true

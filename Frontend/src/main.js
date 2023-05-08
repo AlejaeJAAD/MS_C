@@ -12,6 +12,7 @@ Vue.use(ElementUI);
 
 Vue.use(VueCookies);
 
+
 new Vue({
   router,
   store,

@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken"
 
-const generateRefreshToken = (uid, res) => {
+const generateRefreshToken = (id, res) => {
     try {
         const expiresIn = 60 * 60 * 24 * 30
         const refreshToken = jwt.sign(
-            { uid },
+            { id },
             process.env.JWT_REFRESH_SECRET, 
             {expiresIn}
         )

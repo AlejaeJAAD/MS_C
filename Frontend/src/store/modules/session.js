@@ -2,14 +2,15 @@ import api from '@/api.js';
 import VueCookies from 'vue-cookies'
 
 const actions = {
-    async signup({ commit }, { firstName, lastName, phone, email, password }) {
+    async signup({ commit }, { firstName, lastName, phone, email, password, option }) {
         let flag, message
         const form = {
             firstName, lastName, phone, email, password
         }
         try {
-            const { data } = await api.post('/customers', {
-                form
+            const { data } = await api.post('/auth/register', {
+                form,
+                option
             })
             
             if (data.flag) {
@@ -26,22 +27,22 @@ const actions = {
         }
     },
     async login({ commit }, { email, password }) {
-        let bandera, message
+        let flag, message
         try {
             const { data } = await api.post('/auth/login', { email, password })
-            if (data.bandera) {
-                bandera = data.bandera
+            if (data.flag) {
+                flag = data.flag
                 message = data.message
                 localStorage.setItem('isUserLoggedIn', true)
                 return {
-                    bandera,
+                    flag,
                     message
                 }
             } else {
-                bandera = data.bandera
+                flag = data.flag
                 message = data.message
                 return {
-                    bandera,
+                    flag,
                     message
                 }
             }

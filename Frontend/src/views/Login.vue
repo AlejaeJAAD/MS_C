@@ -237,9 +237,9 @@ export default {
                 if (!this.form.email || !this.form.password) {
                     this.showError('Please add the email or password to log in.') 
                 } else {
-                    const { bandera, message } = await this.login({ email: this.form.email, password: this.form.password })
+                    const { flag, message } = await this.login({ email: this.form.email, password: this.form.password })
 
-                    if (bandera == false) {
+                    if (flag == false) {
                         this.showError(message)
                     } else {
                         this.redirectToDashboard()

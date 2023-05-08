@@ -13,6 +13,13 @@ import * as dotenv from 'dotenv'
 dotenv.config();
 import { Op } from 'sequelize'
 
+const schemaRegister = Joi.object({
+    firstName: Joi.string().min(4).max(100).required(),
+    lastName: Joi.string().min(4).max(100).required(),
+    phone: Joi.number().required(),
+    email: Joi.string().min(4).max(100).required(),
+    password: Joi.string().min(4).max(100).required()
+})
 
 const schemaLogin = Joi.object({
     email: Joi.string().min(3).max(1024).required(),
@@ -22,8 +29,12 @@ const schemaLogin = Joi.object({
 export const register = async (req, res) => {
     const { email, password } = req.body.form
     const { option } = req.body
+    console.log(email, password, option)
 
     try {
+        const { error } = schemaRegister.validate(req.body.form)
+        if (error) return res.status(400).json({ error: error.details[0].message })
+
         // Chek if email already exists
         const emailAlreadyExists = await Register.findOne({
             where: { email: email }
@@ -34,7 +45,11 @@ export const register = async (req, res) => {
             });
         }
 
-        const newUser = await Register.create({ email, password })
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        console.log(hashedPassword)
+
+        const newUser = await Register.create({ email, password: hashedPassword })
 
         // Register a customer or employee based on the option.
         let registeredUser;
@@ -42,73 +57,37 @@ export const register = async (req, res) => {
         const {
                 firstName,
                 lastName,
-                address,
-                city,
-                country,
-                postalCode,
                 phone,
-                email,
-                company,
-                state,
-                fax
-            } = req.body
+                email
+            } = req.body.form
             registeredUser = await Customer.create({
                 firstName,
                 lastName,
-                address,
-                city,
-                country,
-                postalCode,
                 phone,
-                email,
-                company,
-                state,
-                fax
+                email
             });
         } else if (option === 'employee') {
         const {
-                firstName,
-                lastName,
-                address,
-                city,
-                country,
-                postalCode,
-                phone,
-                email,
-                company,
-                state,
-                fax,
-                title,
-                reportsTo,
-                birthDate,
-                hireDate
-            } = req.body
+            firstName,
+            lastName,
+            phone,
+            email
+            } = req.body.form
             registeredUser = await Employee.create({
                 firstName,
                 lastName,
-                address,
-                city,
-                country,
-                postalCode,
                 phone,
-                email,
-                company,
-                state,
-                fax,
-                title,
-                reportsTo,
-                birthDate,
-                hireDate
+                email
             });
         } else {
             return res.status(400).json({
-                message: 'Invalid option'
+                message: 'Invalid option',
             })
         }
 
         return res.status(201).json({
             message: `New ${option} registered successfully`,
-            data: registeredUser
+            flag: true,
         })
     } catch (error) {
         console.log(error);
@@ -119,81 +98,66 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { error } = schemaLogin.validate(req.body)
-        if (error) return res.status(400).json({ error: error.details[0].message })
+        if (error) {
+            const errorMessage = error.details.map((detail) => detail.message).join(', ');
+            return res.status(400).json({ error: errorMessage });
+        }
 
         const { email, password } = req.body
 
         // Check if email and password are provided
         if (!email || !password) {
-            return res.status(400).json({ message: 'Please provide email and password', bandera: false });
+            return res.status(400).json({ message: 'Please provide email and password', flag: false });
         }
 
-        // Fetch the register record using the email
+        const registerInfo = await Register.findOne({ where: { email: email }, raw: true })
+        const isCustomer = await Customer.findOne({ where: { email: email }, raw: true })
+        const isEmployee = await Employee.findOne({ where: { email: email }, raw: true })
+        
+        const userType = isCustomer ? 'customer' : isEmployee ? 'employee' : null;
+
+        if (!userType) {
+            return res.status(200).json({ message: `You're not a customer or employee.`, flag: false });
+        }
+
+        if (!registerInfo) {
+            return res.status(401).json({ message: `We couldn't find an email registered in our app.`, flag: false });
+        }
+
+        let isPasswordCorrect;
         try {
-            const registerInfo = await Register.findOne({ where: { email: email } })
-
-            const isCustomer = await Customer.findOne({ where: { email: email } })
-            if (isCustomer) {
-                if (!registerInfo) {
-                    return res.status(401).json({ message: `We coulnd't find an email registered in our app.`, bandera: false });
-                }
-    
-                let isPasswordCorrect
-                try {
-                    // Check if password is correct
-                    isPasswordCorrect = await bcrypt.compare(password, registerInfo.dataValues.password);
-                } catch (error) {
-                    return res.status(401).json({
-                        message: `The credentials provided are wrong.`,
-                        bandera: false
-                    })
-                }
-        
-                if (!isPasswordCorrect) {
-                    return res.status(401).json({
-                        message: `
-                            The login information was incorrect! <br>
-                            Password must be wrong.
-                        `,
-                        bandera: false
-                    });
-                }
-        
-                // Call generateToken method
-                const { token, expiresIn } = generateToken(registerInfo.dataValues.id) 
-                generateRefreshToken(registerInfo.dataValues.id, res);
-        
-                // const userIP = req.headers['user-ip'];
-        
-                // const login = new Login({
-                //     uid:  registerInfo.dataValues.id,
-                //     loginDate: new Date(),
-                //     loginIP: userIP
-                // });
-        
-                // const userLoggedIn = await login.save()
-        
-                // Send JWT token to client
-                return res.status(201).json({
-                    token,
-                    expiresIn,
-                    // userLoggedIn,
-                    message: 'Login successfull',
-                    bandera: true
-                })
-                
-            } else {
-                return res.status(200).json({
-                    message: `You're not a customer.`, bandera: false
-                })
-            }
-
-            // Check if user exists
+            isPasswordCorrect = await bcrypt.compare(password, registerInfo.password);
         } catch (error) {
-            return res.status(401).json({ message: `You're not a customer registered in our application, please register.`, bandera: false });
+            return res.status(401).json({
+                message: 'The credentials provided are wrong.',
+                flag: false,
+            });
+        }
+        
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                message: `The login information was incorrect! Password must be wrong.`,
+                flag: false,
+            });
         }
 
+        const { token, expiresIn } = generateToken(registerInfo.id);
+        generateRefreshToken(registerInfo.id, res);
 
+        // const userIP = req.headers['user-ip'];
+
+        // const login = new Login({
+        //     uid:  registerInfo.dataValues.id,
+        //     loginDate: new Date(),
+        //     loginIP: userIP
+        // });
+
+        return res.status(201).json({
+            token,
+            expiresIn,
+            message: 'Login successful',
+            flag: true,
+        });
     } catch (error) {
         res.status(500).json({ 
             error: 'An error has occured trying to log in'
@@ -359,7 +323,7 @@ export const confirmForgotPassword = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
     try {
-        const { token, expiresIn } = generateToken(req.uid)
+        const { token, expiresIn } = generateToken(req.id)
             return res.json({
                 token, expiresIn
             })

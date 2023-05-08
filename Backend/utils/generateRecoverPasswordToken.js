@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken"
 
-const generateRecoverPasswordToken = (uid, email) => {
+const generateRecoverPasswordToken = (id, email) => {
     const expiresInMinutes = 10
     const expiresAt = new Date()
     expiresAt.setMinutes(expiresAt.getMinutes() + expiresInMinutes)
 
     try {
         const token = jwt.sign(
-            { uid, email },
+            { id, email },
             process.env.JWT_RECOVER_PASSWORD, 
             { expiresIn: expiresInMinutes * 60 }
         )

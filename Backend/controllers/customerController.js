@@ -7,6 +7,8 @@ import Track from '../models/Track.js'
 import Genre from '../models/Genre.js'
 import { register } from '../services/authService.js';
 import Joi from 'joi'
+import { sequelize } from '../configure-db.js'
+import { QueryTypes } from 'sequelize';
 
 const schemaRegister = Joi.object({
     firstName: Joi.string().min(4).max(100).required(),
@@ -23,79 +25,6 @@ const schemaRegister = Joi.object({
     // fax: Joi.number().required(),
     // support_rep_id: Joi.number().required(),
 })
-
-export const createCustomer = async (req, res) => {
-    const {
-        lastName,
-        firstName,
-        // company,
-        // address,
-        // city,
-        // state,
-        // country,
-        // postalCode,
-        phone,
-        // fax,
-        // support_rep_id
-    } = req.body.form
-    const { email, password } = req.body.form
-
-    try {
-        const { error } = schemaRegister.validate(req.body.form)
-        
-        if (error) {
-            return res.status(400).json({ error: error.details[0].message })
-        }
-
-        const emailAlreadyExists = await Register.findOne({
-            where: { email: email }
-        });
-        if (emailAlreadyExists) {
-            return res.status(500).json({
-                mesage: 'Email already registered'
-            });
-        }
-
-        //New customer
-        const newCustomer = new Customer({
-            lastName,
-            firstName,
-            // company,
-            // address,
-            // city,
-            // state,
-            // country,
-            // postalCode,
-            phone,
-            // fax,
-            email,
-            // support_rep_id
-        });
-        
-        const registeredCustomer = await newCustomer.save();
-        const data = {
-            registeredUser: registeredCustomer,
-            email,
-            password
-        }
-        register(data)
-
-        return res.status(201).json({
-            message: 'New customer has been created',
-            flag: true
-        });
-    } catch (err) {
-        console.log(err)
-        if (error.code == 11000) {
-            return res.status(400).json({
-                error: 'Customer already exists!'
-            })
-        }
-        return res.status(500).json({
-            error: 'ERROR WITH SERVER!'
-        })
-    }
-}
 
 export const getCustomers = async (req, res) => {
     await Customer.findAll().then(customers => {
@@ -211,5 +140,29 @@ export const getAllTracksPurchasedByCustomer = async (req, res) => {
         return res.status(500).json({
             message: "Something went wrong!"
         })
+    }
+}
+
+export const topCustomers = async (req, res) => {
+    try {
+        const topCustomers = await sequelize.query(`
+            SELECT c.FirstName, c.LastName, SUM(ii.UnitPrice * ii.Quantity) AS TotalPurchaseValue
+            FROM invoiceLine ii
+            INNER JOIN invoice i ON ii.InvoiceId = i.InvoiceId
+            INNER JOIN customer c ON i.CustomerId = c.CustomerId
+            GROUP BY c.CustomerId
+            ORDER BY TotalPurchaseValue DESC
+            LIMIT 10
+            `, {
+                type: QueryTypes.SELECT,
+                raw: true
+        });
+        console.log(topCustomers)
+        return res.status(201).json({
+            data: topCustomers
+        })
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 }

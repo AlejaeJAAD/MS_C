@@ -25,7 +25,7 @@ export const register = async (data) => {
     const newRegister = new Register({
         email: email,
         password: hashedPassword,
-        uid: userId
+        id: userId
     })
     const registerInfo = await newRegister.save()
 }

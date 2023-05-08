@@ -233,6 +233,10 @@
 .welcome-text {
     margin-top: 7rem;
 }
+
+.r_group {
+    margin-top: -2rem;
+}
 </style>
 
 <script>
@@ -243,6 +247,7 @@ const SIGNUP_TIMEOUT = 2000
 export default {
     data() {
         return {
+            radio1: '',
             error: null,
             form: {
                 firstName: '',
@@ -251,13 +256,6 @@ export default {
                 email: '',
                 password: '',
                 confirmPassword: '',
-                // company: '',
-                // address: '',
-                // country: '',
-                // state: '',
-                // city: '',
-                // postalCode: '',
-                // fax: '',
             },
             loading: false,
             showMessageError: false,
@@ -319,6 +317,7 @@ export default {
                 this.startLoading()
 
                 const { firstName, lastName, phone, email, password, confirmPassword } = this.form;
+                const option = 'customer'
 
                 if (!firstName || !lastName || !phone || !email || !password || !confirmPassword) {
                     this.showError(`You didn't provide values for the inputs.`)
@@ -328,14 +327,15 @@ export default {
                         lastName: lastName,
                         phone: phone,
                         email: email,
-                        password: password
+                        password: password,
+                        option: option
                     })
 
                     if (flag) {
                         setTimeout(() => {
                             // Add some dialog showing the successfully customer register before we send the user to the login page.
                             this.redirectToLogin()
-                        }, 3000);
+                        }, 1000);
                     } else {
                         this.showMessageError = true
                         this.errorMessage = message

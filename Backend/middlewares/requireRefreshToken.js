@@ -11,11 +11,11 @@ const requireRefreshToken = (req, res, next) => {
         }
 
         try {
-            const { uid, exp } = jwt.verify(refreshTokenCookie, process.env.JWT_REFRESH_SECRET);
+            const { id, exp } = jwt.verify(refreshTokenCookie, process.env.JWT_REFRESH_SECRET);
             const now = Math.floor(Date.now() / 1000) // convert current time to Unix timestamp
 
             if (exp > now) {
-                req.uid = uid
+                req.id = id
                 next()
             } else {
                 return res.json({

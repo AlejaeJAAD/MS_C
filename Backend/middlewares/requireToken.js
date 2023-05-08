@@ -8,8 +8,8 @@ const requireToken = (req, res, next) => {
 
         token = token.split(" ")[1]
 
-        const { uid } = jwt.verify(token, process.env.JWT_SECRET)
-        req.uid = uid
+        const { id } = jwt.verify(token, process.env.JWT_SECRET)
+        req.id = id
         next()
     } catch (error) {
         console.log(error);
