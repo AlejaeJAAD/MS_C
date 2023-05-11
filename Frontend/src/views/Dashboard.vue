@@ -1,45 +1,28 @@
 <template>
   <div class="dashboard-container">
-    <div class="sidebar-menu">
-      <div class="menu-header">
+    <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+      <el-menu-item class="expand-collapse" @click="isCollapse = !isCollapse">
+        <i class="el-icon-s-fold" v-if="!isCollapse"></i>
+        <i class="el-icon-s-unfold" v-else></i>
+      </el-menu-item>
+
+      <el-menu-item index="1">
         <i class="el-icon-menu"></i>
-        <span class="menu-title">Dashboard</span>
-      </div>
-      <el-menu :default-active="$route.path" class="menu-items">
-        <el-menu-item index="/dashboard">
-          <i class="el-icon-s-home"></i>
-          <span slot="title">Home</span>
-        </el-menu-item>
-        <el-submenu index="users">
-          <template slot="title">
-            <i class="el-icon-user"></i>
-            <span>Users</span>
-          </template>
-          <el-menu-item index="/dashboard/users">
-            <i class="el-icon-s-custom"></i>
-            <span slot="title">All Users</span>
-          </el-menu-item>
-          <el-menu-item index="/dashboard/users/new">
-            <i class="el-icon-plus"></i>
-            <span slot="title">New User</span>
-          </el-menu-item>
-        </el-submenu>
-        <el-submenu index="settings">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span>Settings</span>
-          </template>
-          <el-menu-item index="/dashboard/settings/general">
-            <i class="el-icon-s-tools"></i>
-            <span slot="title">General</span>
-          </el-menu-item>
-          <el-menu-item index="/dashboard/settings/security">
-            <i class="el-icon-s-check"></i>
-            <span slot="title">Security</span>
-          </el-menu-item>
-        </el-submenu>
-      </el-menu>
-    </div>
+        <span slot="title">Dashboard</span>
+      </el-menu-item>
+      <el-submenu index="2">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">Customer</span>
+        </template>
+        <el-menu-item-group title="Account">
+          <el-menu-item index="2-1">Profile</el-menu-item>
+          <el-menu-item index="2-2">Restore Password</el-menu-item>
+          <el-menu-item index="2-3">Forgot Password</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+    </el-menu>
+
     <el-card class="card">
       <div v-if="userLogout" class="message-card logout">
         <i class="el-icon-circle-check"></i>
@@ -51,11 +34,12 @@
       </div>
       <div v-if="loadedData" class="content-card">
         <h1 class="header">Protected route</h1>
-        <div v-for="currentUser in user" class="user-info">
+        <div class="user-info">
           <div class="user-profile-widget">
             <div class="user-info">
-              <h3 class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
+              <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
               <div class="contact-info">
+                <span class="email">{{ user.email }}</span>
               </div>
               <div class="profile-buttons">
                 <el-button class="edit-profile-button" @click="editProfile">Edit Profile</el-button>
@@ -66,50 +50,50 @@
           </div>
         </div>
 
-        <Sales />
+        <el-collapse accordion>
+          <el-collapse-item name="1">
+            <template slot="title">
+              Sales<i class="header-icon el-icon-information"></i>
+            </template>
+            <Sales />
+          </el-collapse-item>
+        </el-collapse>
       </div>
     </el-card>
   </div>
 </template>
 
 <style scoped>
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 250px;
+  margin: 5px;
+  padding: 0px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+}
 .dashboard-container {
   display: flex;
   flex-direction: row;
   height: 100%;
 }
-
-.sidebar-menu {
-width: 250px;
-height: 100%;
-background-color: #fff;
-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-padding: 20px;
-}
-.menu-header {
-display: flex;
-flex-direction: row;
-align-items: center;
-margin-bottom: 20px;
-}
-.menu-title {
-font-size: 18px;
-font-weight: bold;
-margin-left: 10px;
-}
-.menu-items {
-flex-grow: 1;
-}
 .card {
-flex-grow: 1;
-margin: 20px;
-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-border-radius: 8px;
-overflow: hidden;
+  flex-grow: 1;
+  margin: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
 }
+.sidebar {
+  margin: 5px;
+  padding: 0px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.expand-collapse {
+  cursor: pointer;
+}
+
 .message-card {
 display: flex;
 justify-content: center;
@@ -125,9 +109,7 @@ background-color: #007aff;
 .logout {
 background-color: #28a745;
 }
-.content-card {
-  padding: 20px;
-}
+
 .header {
 font-size: 24px;
 font-weight: bold;
@@ -149,20 +131,6 @@ color: #aaa;
   margin-bottom: 20px;
 }
 
-.profile-picture {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-right: 20px;
-}
-
-.profile-picture img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .user-info {
   display: flex;
   flex-direction: column;
@@ -172,11 +140,6 @@ color: #aaa;
   font-size: 24px;
   font-weight: bold;
   margin: 0;
-}
-
-.user-title {
-  color: #aaa;
-  margin: 5px 0;
 }
 
 .contact-info {
@@ -227,41 +190,46 @@ export default {
     Sales
   },
   data() {
-      return {
-          user: '',
-          cookieValue: '',
-          userLogout: false,
-          loadingData: true,
-          loadedData: false,
+    return {
+      isCollapse: false,
+      userLogout: false,
+      loadingData: true,
+      loadedData: false,
       }
   },
   async mounted() {
-      this.user = await this.$store.dispatch('getUser');
-      setTimeout(() => {
-          this.loadingData = false
-          this.loadedData = true
-      }, 1000);
+    if (this.user) {
+      this.loadingData = false
+      this.loadedData = true
+    }
+  },
+  computed: {
+    user() {
+      const user = this.$store.getters.getUser;
+      return user || {};
+    }
   },
   methods: {
-      logout() {
-          try {
-              this.userLogout = true
-              this.loadedData = false
-              this.$store.dispatch('logout')
-              setTimeout(() => {
-                  this.userLogout = false
-                  this.$router.push("/login")
-              }, 1500);
-          } catch (error) {
-              console.log(error)
-          }
-      },
-      editProfile() {
-        // navigate to edit profile page
-      },
-      resetPassword() {
-        // navigate to reset password page
-      },
+    logout() {
+        try {
+            this.userLogout = true
+            this.loadedData = false
+            this.$store.dispatch('logout')
+            setTimeout(() => {
+                this.userLogout = false
+                this.$router.push("/login")
+            }, 1500);
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    editProfile() {
+    },
+    resetPassword() {
+    },
+    toggleSidebar() {
+      this.collapse = !this.collapse;
+    },
   },
 }
 </script>

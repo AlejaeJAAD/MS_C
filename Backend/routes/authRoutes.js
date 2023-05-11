@@ -5,9 +5,11 @@ import {
     forgotPassword,
     confirmForgotPassword,
     logout,
-    refreshToken
+    refreshToken,
+    getUserData
 } from '../controllers/authController.js'
 import requireRefreshToken from '../middlewares/requireRefreshToken.js'
+import requireToken from '../middlewares/requireToken.js'
 
 const router = Router()
 
@@ -17,5 +19,6 @@ router.post("/forgot-password", forgotPassword)
 router.post("/confirm-forgot-password", confirmForgotPassword)
 router.post("/logout", logout)
 router.get("/refreshToken", requireRefreshToken, refreshToken)
+router.get("/getUserData", requireToken, getUserData)
 
 export default router

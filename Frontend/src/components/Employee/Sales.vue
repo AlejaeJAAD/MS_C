@@ -2,11 +2,12 @@
     <div>
         <el-card v-if="!showProgress">
             <h2 class="widget-header">Top Customers by Total Purchase Value <el-button @click="showProgress = true">Show Bar</el-button> </h2>
+            <h4>Total value: {{ totalValue }}</h4>
             <el-table :data="customers" style="width: 100%">
                 <el-table-column prop="FirstName" label="Customer First Name"></el-table-column>
                 <el-table-column prop="LastName" label="Customer Last Name"></el-table-column>
                 <el-table-column prop="TotalPurchaseValue" label="Total Purchase Value"></el-table-column>
-                <el-table-column label="Chart">
+                <el-table-column label="Customer Percentage by Total Value">
                     <template slot-scope="scope">
                         <el-progress :percentage="getPercentage(scope.row)" :color="getColor(scope.row)" />
                     </template>
@@ -15,9 +16,7 @@
         </el-card>
         <el-card v-else>
             <h2 class="widget-header">Top Customers by Total Purchase Value <el-button @click="showProgress = false">Show Bar</el-button> </h2>
-            <div class="chart-container">
-                <Chart v-if="customers.length" :data="{ customers: customers, totalValue: totalValue, averageValue: averageValue }" />
-            </div>
+            <Chart v-if="customers.length" :data="{ customers: customers, totalValue: totalValue, averageValue: averageValue }" />
         </el-card>
     </div>
 </template>
@@ -76,7 +75,4 @@ export default {
     margin-bottom: 20px;
 }
 
-.chart-container {
-    height: 300px;
-}
 </style>

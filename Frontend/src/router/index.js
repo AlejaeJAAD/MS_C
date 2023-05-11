@@ -10,6 +10,8 @@ import Employee from '../components/Employee.vue'
 import Track from '../components/Track.vue'
 import SongDetails from '@/views/SongDetails.vue'
 import Dashboard from '@/views/Dashboard.vue'
+import Account from '@/views/Account.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -17,18 +19,34 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: 
+      { 
+        title: 'MSTORE - HOME',
+        requiresAuth: true
+      }
   },
   {
     path: '/signup',
     name: 'signup',
     component: Signup,
+    meta: {requiresGuest: true}
   },
   {
     path: '/login',
     name: 'login',
     component: Login,
     meta: {requiresGuest: true}
+  },
+  {
+    path: '/account',
+    name: 'account',
+    component: Account,
+    meta: 
+      { 
+        title: 'MSTORE - ACCOUNT',
+        requiresAuth: true
+      }
   },
   {
     path: '/forgot-password',
@@ -41,14 +59,14 @@ const routes = [
     component: ConfirmForgotPassword,
   },
   {
-    path: '/element',
-    name: 'element',
-    component: Element
-  },
-  {
     path: '/employees',
     name: 'employees',
-    component: Employee
+    component: Employee,
+    meta: 
+      { 
+        title: 'MSTORE - EMPLOYEES',
+        requiresAuth: true
+      }
   },
   {
     path: '/tracks',
@@ -64,7 +82,12 @@ const routes = [
     path: '/tracks/:id',
     name: 'song-details',
     component: SongDetails,
-    props: true
+    props: true,
+    meta: 
+      { 
+        title: 'MSTORE - SONG DETAILS',
+        requiresAuth: true
+      }
   },
   {
     path: '/dashboard',
@@ -85,7 +108,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = window.localStorage.getItem('isUserLoggedIn') === 'true'
+  const isLoggedIn = store.getters.isUserLoggedIn
   const DEFAULT_TITLE = 'MSTORE';
 
   Vue.nextTick(() => {
@@ -96,12 +119,17 @@ router.beforeEach((to, from, next) => {
     if (!isLoggedIn) {
       next('login')
     } else {
-      next()
+      try {
+          store.dispatch('refreshToken');
+          next();
+      } catch (error) {
+        next('login');
+      }
     }
   } else if (to.matched.some(route => route.meta.requiresGuest) && isLoggedIn) {
     next('dashboard')
   } else {
-    next()
+      next()
   }
 })
 

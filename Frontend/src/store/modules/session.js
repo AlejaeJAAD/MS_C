@@ -1,6 +1,29 @@
 import api from '@/api.js';
 import VueCookies from 'vue-cookies'
 
+const state = {
+    user: [],
+    isUserLoggedIn: false,
+}
+
+const getters = {
+    getUser(state) {
+        return state.user
+    },
+    isUserLoggedIn(state) {
+        return state.isUserLoggedIn
+    }    
+}
+
+const mutations = {
+    setUserData(state, data) {
+        state.user = data;
+    },
+    setIsLoggedIn(state, isUserLoggedIn) {
+        state.isUserLoggedIn = isUserLoggedIn;
+    },
+}
+
 const actions = {
     async signup({ commit }, { firstName, lastName, phone, email, password, option }) {
         let flag, message
@@ -26,14 +49,15 @@ const actions = {
             console.log(error)
         }
     },
-    async login({ commit }, { email, password }) {
+    async login({ commit, dispatch }, { email, password }) {
         let flag, message
         try {
             const { data } = await api.post('/auth/login', { email, password })
             if (data.flag) {
                 flag = data.flag
                 message = data.message
-                localStorage.setItem('isUserLoggedIn', true)
+                commit('setIsLoggedIn', true);
+                await dispatch('setUserData');
                 return {
                     flag,
                     message
@@ -92,16 +116,16 @@ const actions = {
             console.log(error)
         }
     },
-    async getUser({ commit, dispatch }) {
+    async setUserData({ commit, dispatch }) {
         try {
             const { token, expiresIn } = await dispatch('refreshToken')
-            const { data } = await api.get("/dashboard", {
+            const { data } = await api.get("/auth/getUserData", {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
             })
-            return data
+            commit("setUserData", data.fullInfo);
         } catch (error) {
             console.log(error)
         }
@@ -109,7 +133,7 @@ const actions = {
     async logout({ commit }) {
         try {
             await api.post("/auth/logout")
-            localStorage.removeItem('isUserLoggedIn')
+            commit('setIsLoggedIn', false);
         } catch (error) {
             console.log(error)
         }
@@ -117,5 +141,8 @@ const actions = {
 }
 
 export default {
+    state,
+    getters,
+    mutations,
     actions
-};
+}
