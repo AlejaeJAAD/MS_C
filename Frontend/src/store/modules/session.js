@@ -4,6 +4,8 @@ import VueCookies from 'vue-cookies'
 const state = {
     user: [],
     isUserLoggedIn: false,
+    isCustomer: false,
+    isEmployee: false
 }
 
 const getters = {
@@ -12,7 +14,13 @@ const getters = {
     },
     isUserLoggedIn(state) {
         return state.isUserLoggedIn
-    }    
+    },
+    isCustomerOrEmployee(state) {
+        return {
+            isCustomer: state.isCustomer,
+            isEmployee: state.isEmployee
+        }
+    }
 }
 
 const mutations = {
@@ -22,6 +30,12 @@ const mutations = {
     setIsLoggedIn(state, isUserLoggedIn) {
         state.isUserLoggedIn = isUserLoggedIn;
     },
+    setIsCustomer(state, isCustomer) {
+        state.isCustomer = isCustomer;
+    },
+    setIsEmployee(state, isEmployee) {
+        state.isEmployee = isEmployee
+    }
 }
 
 const actions = {
@@ -126,9 +140,22 @@ const actions = {
                 },
             })
             commit("setUserData", data.fullInfo);
+            commit('setIsCustomer', data.isCustomer)
+            commit('setIsEmployee', data.isEmployee)
         } catch (error) {
             console.log(error)
         }
+    },
+    async changePassword({ commit }, { form }) {
+        console.log(form)
+        const { token, expiresIn } = await dispatch('refreshToken')
+        const { data } = await api.get("/auth/change-password", {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        console.log(data)
     },
     async logout({ commit }) {
         try {

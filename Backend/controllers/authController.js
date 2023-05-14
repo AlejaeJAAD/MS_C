@@ -362,12 +362,14 @@ export const getUserData = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        let fullInfo;
+        let fullInfo, isCustomer = false, isEmployee = false
 
         if (userType[0].customerid) {
             fullInfo = await Customer.findOne({ where: { email } });
+            isCustomer = (fullInfo !== null);
         } else if (userType[0].employeeid) {
             fullInfo = await Employee.findOne({ where: { email } });
+            isEmployee = (fullInfo !== null);
         } else {
             throw new Error("User type not found");
         }
@@ -376,7 +378,7 @@ export const getUserData = async (req, res) => {
             throw new Error("User not found");
         }
 
-        return res.status(200).json({ fullInfo });
+        return res.status(200).json({ fullInfo, isCustomer, isEmployee });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal server error" });

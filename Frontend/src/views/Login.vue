@@ -4,7 +4,7 @@
             <el-col :xs="22" :sm="14" :md="10" :lg="8" :xl="6">
                 <el-card class="login-card" shadow="hover">
                     <h2 class="login-title">Log in to your account</h2>
-                    <el-form ref="form" :model="form" label-position="top" label-width="0" id="my-form">
+                    <el-form ref="form" :model="form" label-position="top" label-width="0">
                         <el-form-item prop="email" :rules="emailRules">
                             <el-input size="small" v-model="form.email" placeholder="Email address" >
                                 <i slot="prefix" class="el-input__icon el-icon-user-solid"></i>
@@ -187,9 +187,6 @@
     color: #409EFF;
 }
 
-#my-form .el-form-item__error {
-    color: blue !important;
-}
 </style>
 
 <script>

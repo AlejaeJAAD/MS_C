@@ -2,10 +2,10 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Signup from '../views/SignUp.vue'
 import Login from '../views/Login.vue'
+import RestorePasssword from '../views/RestorePasssword.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import ConfirmForgotPassword from '../views/ConfirmForgotPassword.vue'
 import Home from '../views/Home.vue'
-import Element from '../components/Element.vue'
 import Employee from '../components/Employee.vue'
 import Track from '../components/Track.vue'
 import SongDetails from '@/views/SongDetails.vue'
@@ -47,6 +47,11 @@ const routes = [
         title: 'MSTORE - ACCOUNT',
         requiresAuth: true
       }
+  },
+  {
+    path: '/restore-password',
+    name: 'restore-password',
+    component: RestorePasssword,
   },
   {
     path: '/forgot-password',

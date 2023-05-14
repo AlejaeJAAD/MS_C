@@ -1,28 +1,23 @@
 <template>
-    <div class="app-container">
-        <el-menu
-            class="top-bar"
-            mode="horizontal"
-            background-color="#2c2c2c"
-            text-color="#fff"
-            active-text-color="#ffd04b">
-            <el-menu-item index="1" 
-                                :class="{ active: $route.path === '/tracks' }"
-                                @click="$router.push('/tracks')">
-                Tracks
+    <div>
+        <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+            <el-menu-item class="expand-collapse" @click="isCollapse = !isCollapse">
+                <i class="el-icon-s-fold expand-collapse" v-if="!isCollapse"></i>
+                <i class="el-icon-s-unfold expand-collapse" v-else></i>
             </el-menu-item>
-                <el-submenu index="2">
-                    <template slot="title">Account</template>
-                        <el-menu-item index="2-1"
-                                        :class="{ active: $route.path === '/account/personal-info' }"
-                                        @click="$router.push('/account/personal-info')">
-                                        Personal Info
-                        </el-menu-item>
-                        <el-menu-item index="2-2"
-                                        :class="{ active: $route.path === '/account/security' }"
-                                        @click="$router.push('/account/security')">
-                            Security</el-menu-item>
-                </el-submenu>
+
+            <el-menu-item index="1"
+                :class="{ active: $route.path === '/dashboard' }"
+                @click="$router.push('/dashboard')">
+                <i class="el-icon-menu" :style="{ color: $route.path === '/dashboard' ? '#ffd04b' : 'inherit' }"></i>
+                <span slot="title">Dashboard</span>
+            </el-menu-item>
+            <el-menu-item index="2"
+                :class="{ active: $route.path === '/account' }"
+                @click="$router.push('/account')">
+                <i class="el-icon-setting" :style="{ color: $route.path === '/account' ? '#ffd04b' : 'inherit' }"></i>
+                <span slot="title">Account</span>
+            </el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -31,32 +26,46 @@
 export default {
     data() {
         return {
-            activeIndex: '1',
-            activeIndex2: '1'
-        };
+            isCollapse: false,
+        }
     },
     methods: {
-        handleSelect(key, keyPath) {
-            console.log(key, keyPath);
-        }
+        toggleSidebar() {
+            this.collapse = !this.collapse;
+        },
     }
 }
 </script>
 
-<style>
-.app-container {
+<style scoped>
+.el-menu-vertical-demo .el-menu-item:hover {
+    background-color: #ffd04b;
+}
+.el-menu-vertical-demo .el-menu-item.active, 
+.el-menu-vertical-demo .el-submenu-item.active {
+    background-color: white;
+    color: #ffd04b;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 250px;
+    margin: 5px;
+    padding: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+.dashboard-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    height: 100%;
 }
-
-.top-bar .el-menu-item.active,
-.top-bar .el-submenu__title span.active {
-    color: #ffd04b !important;
+.sidebar {
+    margin: 5px;
+    padding: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
-
-.top-bar {
-    background-color: #1a1a1a;
-    padding: 0 20px;
+.expand-collapse {
+    cursor: pointer;
+    color: #000;
 }
-
 </style>

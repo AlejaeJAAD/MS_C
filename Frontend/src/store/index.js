@@ -8,9 +8,9 @@ import tracks from './modules/tracks'
 Vue.use(Vuex)
 
 const persistedStateConfig = {
-  key: 'my-app',
+  key: 'MS_C_JAAD',
   storage: window.localStorage,
-  paths: ['session.isUserLoggedIn', 'session.user', 'employees', 'tracks']
+  paths: ['session.user', 'session.isUserLoggedIn', 'session.isCustomer', 'session.isEmployee', 'employees', 'tracks']
 }
 
 export default new Vuex.Store({
