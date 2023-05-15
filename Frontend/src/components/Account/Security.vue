@@ -1,11 +1,11 @@
 <template>
     <div class="security-form">
         <div>
-            <el-form size="medium">
+            <el-form size="medium" :label-position="isMobile ? 'top' : 'left'">
                 <el-row :gutter="24">
-                    <el-col :xs="24" :sm="12" class="col_input">
-                        <el-form-item prop="email" :rules="emailRules">
-                            <el-input size="small" v-model="user.email" placeholder="Email address" disabled>
+                    <el-col :xs="24" :sm="24" class="col_input">
+                        <el-form-item prop="email">
+                            <el-input size="small" v-model="user.email" :placeholder="user.firstName ? '' : 'Add your email address here.'" disabled>
                                 <i slot="prefix" class="el-input__icon el-icon-message"></i>
                             </el-input>
                         </el-form-item>
@@ -32,6 +32,11 @@
                             </el-input>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="24">
+                        <el-button class="button_reset" @click="updatePassword">
+                            Reset password
+                        </el-button>
+                    </el-col>
                 </el-row>
             </el-form>
         </div>
@@ -49,6 +54,10 @@ export default {
     },
     data() {
         return {
+            form: {},
+            isCustomer: false,
+            isEmployee: false,
+            isMobile: false,
             editable: false,
             oldPassword: '',
             newPassword: '',
@@ -67,19 +76,25 @@ export default {
                 trigger: ["blur", "change"],
                 },
             ],
-            emailRules: [
-                { required: true, message: "Please enter your email address", trigger: "blur" },
-                {
-                    type: "email",
-                    message: "Please enter a valid email address",
-                    trigger: ["blur", "change"],
-                },
-            ],
         }
     },
     mounted() {
         this.$nextTick(() => {
             this.form = this.user
+            const user = this.$store.getters.isCustomerOrEmployee;
+            this.isCustomer = user.isCustomer
+            this.isEmployee = user.isEmployee
+
+            if (document.documentElement.clientWidth < 768) {
+                this.isMobile = true;
+            }
+            window.addEventListener('resize', () => {
+            if (document.documentElement.clientWidth < 768) {
+                this.isMobile = true;
+            } else {
+                this.isMobile = false;
+            }
+            });
         })
     },
     methods: {
@@ -96,21 +111,21 @@ export default {
 
                     const form = {
                         email: this.user.email,
-                        password: this.oldPassword,
+                        oldPassword: this.oldPassword,
                         newPassword: this.newPassword
                     }
 
-                    const { message, flag } = await changePassword({ form })
-                    console.log(message, flag)
+                    const { message } = await this.changePassword({ form })
+                    console.log(message)
 
-                    this.dialog = true
+                    // this.dialog = true
     
-                    setTimeout(() => {
-                        this.progress = false
-                        this.$router.push({
-                            name: 'dashboard'
-                        })
-                    }, 1500)
+                    // setTimeout(() => {
+                    //     this.progress = false
+                    //     this.$router.push({
+                    //         name: 'dashboard'
+                    //     })
+                    // }, 1500)
                     
                 }
             } catch (error) {
@@ -128,6 +143,16 @@ export default {
 }
 .col_input {
     margin-bottom: 24px;
+}
+.button_reset {
+    color: white;
+    background-color: #ffd04b;
+    border: 1px solid #ffd04b;
+    width: 100%;
+}
+.button_reset:hover {
+    background-color: white;
+    color: #ffd04b;
 }
 ::v-deep .el-input__inner {
     background-color: transparent !important;

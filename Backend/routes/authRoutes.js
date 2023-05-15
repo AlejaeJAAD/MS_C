@@ -4,6 +4,7 @@ import {
     login,
     forgotPassword,
     confirmForgotPassword,
+    changePassword,
     logout,
     refreshToken,
     getUserData
@@ -17,6 +18,7 @@ router.post("/register", register)
 router.post("/login", login)
 router.post("/forgot-password", forgotPassword)
 router.post("/confirm-forgot-password", confirmForgotPassword)
+router.put("/change-password", requireToken, changePassword)
 router.post("/logout", logout)
 router.get("/refreshToken", requireRefreshToken, refreshToken)
 router.get("/getUserData", requireToken, getUserData)

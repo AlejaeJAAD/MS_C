@@ -323,6 +323,46 @@ export const confirmForgotPassword = async (req, res) => {
     }
 }
 
+export const changePassword = async (req, res) => {
+    const { form } = req.body
+    const { oldPassword, newPassword, email } = form
+    
+    try {
+        const user = await Register.findOne({ 
+            where: { email: email }
+        });
+    
+        const validPassword = await bcrypt.compare(oldPassword, user.dataValues.password)
+        if (!validPassword) return res.status(401).send({
+            error: `
+                Old password doesn't match <br/>
+                We couldn't set the new password since the old one is wrong
+                <br/>
+                Please check your previous password and try again or try to reset your password through the forgot password option.
+            `
+        })
+    
+        if (!newPassword) {
+            res.status(404).json({
+                message: 'New password is required'
+            })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const password = await bcrypt.hash(newPassword, salt)
+
+        await user.update({ password: password });
+
+        return res.status(201).json({
+            message: `Password has changed successfully for the email: ${email}`
+        })
+    } catch (error) {
+        return res.status(401).json({
+            message: 'Something went wrong.'
+        })
+    }
+}
+
 export const refreshToken = async (req, res) => {
     try {
         const { token, expiresIn } = generateToken(req.id)

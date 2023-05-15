@@ -146,16 +146,15 @@ const actions = {
             console.log(error)
         }
     },
-    async changePassword({ commit }, { form }) {
-        console.log(form)
+    async changePassword({ commit, dispatch }, { form }) {
         const { token, expiresIn } = await dispatch('refreshToken')
-        const { data } = await api.get("/auth/change-password", {
+        const { data } = await api.put("/auth/change-password", { form }, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
         })
-        console.log(data)
+        return data
     },
     async logout({ commit }) {
         try {
